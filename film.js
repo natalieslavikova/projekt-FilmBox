@@ -104,3 +104,175 @@ const filmy = [
 		premiera: '2022-12-24',
 	},
 ]
+
+const articleId = window.location.hash.slice(1);
+const article = filmy.find((ar) => ar.id === articleId);
+
+const detailFilmu = document.querySelector("#detail-filmu");
+detailFilmu.innerHTML = "";
+
+const premiera = dayjs(article.premiera).format('D. M. YYYY') //proměnná premiéry
+
+detailFilmu.innerHTML += `
+
+	<div class="row g-0">
+		<div class="col-md-5">
+			<img
+				src="${article.plakat.url}"
+				alt="plakát"
+				class="img-fluid rounded-start"
+				width="${article.plakat.sirka}"
+				height="${article.plakat.vyska}"
+			/>
+		</div>
+		<div class="col-md-7">
+			<div class="card-body">
+				<h5 class="card-title">${article.nazev}</h5>
+				<p class="card-text">${article.popis}</p>
+				<p class="card-text">
+					<small class="text-muted" id="premiera">
+					
+					Premiéra <strong>${premiera}</strong>, což je za 24 
+						dní.</small
+					>
+				</p>
+				<h6>Hodnocení</h6>
+				<div class="stars">
+					<button
+						class="far fa-star button-star"
+						data-mdb-toggle="tooltip"
+						title="Nic moc"
+					>
+						1
+					</button>
+					<button
+						class="far fa-star button-star"
+						data-mdb-toggle="tooltip"
+						title="Ucházející"
+					>
+						2
+					</button>
+					<button
+						class="far fa-star button-star"
+						data-mdb-toggle="tooltip"
+						title="Dobrý"
+					>
+						3
+					</button>
+					<button
+						class="far fa-star button-star"
+						data-mdb-toggle="tooltip"
+						title="Skvělý"
+					>
+						4
+					</button>
+					<button
+						class="far fa-star button-star"
+						data-mdb-toggle="tooltip"
+						title="Úžasný"
+					>
+						5
+					</button>
+				</div>
+
+				<h6 class="mt-4">Poznámka</h6>
+				<form id="note-form">
+					<div class="row">
+						<div class="col-md-6 col-lg-7 col-xl-8 mb-2">
+							<div class="form-outline">
+								<textarea
+									class="form-control"
+									id="message-input"
+									rows="4"
+								></textarea>
+								<label class="form-label" for="message-input"
+									>Text poznámky</label
+								>
+							</div>
+						</div>
+						<div class="col-md-6 col-lg-5 col-xl-4">
+							<div class="form-check d-flex justify-content-center mb-2">
+								<input
+									class="form-check-input me-2 mb-2"
+									type="checkbox"
+									value=""
+									id="terms-checkbox"
+								/>
+								<label class="form-check-label" for="terms-checkbox">
+									Souhlasím se všeobecnými podmínky užívání.
+								</label>
+							</div>
+							<button type="submit" class="btn btn-primary btn-block">
+								Uložit
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+`
+
+// 8. poznámka = formulář
+
+const formular = document.querySelector("#note-form"); //  formulář
+
+formular.addEventListener("submit", (event) => {
+    event.preventDefault(); // Zabrání výchozímu chování formuláře
+
+    const poznamka = document.querySelector("#message-input"); // Vybere pole pro poznámku
+    const termsCheckbox = document.querySelector("#terms-checkbox"); // Vybere zaškrtávací políčko pro souhlas s podmínkami
+
+    if (poznamka.value.trim() === "" ) { // Zkontroluje, zda je pole pro poznámku prázdné nebo není zaškrtnuto políčko pro souhlas s podmínkami
+        poznamka.classList.add("is-invalid"); // Přidá třídu 'is-invalid' pro zvýraznění pole pro poznámku
+		
+	} else if (!termsCheckbox.checked) { 
+		termsCheckbox.classList.add("is-invalid"); 
+
+    } else {
+        poznamka.classList.remove("is-invalid") || termsCheckbox.classList.remove("is-invalid"); // Odebere třídu 'is-invalid', pokud jsou splněny podmínky
+
+        const formularObsah = document.querySelector("#note-content"); // Vybere místo pro zobrazení obsahu poznámky
+        formularObsah.innerHTML = `<p class="form-outline">${poznamka.value}</p>`; // Zobrazí obsah poznámky
+    }
+});
+
+
+const prehravac = document.querySelector("#prehravac");
+
+if (prehravac) {
+    const video = prehravac.querySelector("video");
+    const playButton = prehravac.querySelector(".play");
+    const pauseButton = prehravac.querySelector(".pause");
+    const currentTimeDisplay = prehravac.querySelector(".current-time");
+
+    if (video && playButton && pauseButton && currentTimeDisplay) {
+        playButton.addEventListener("click", () => {
+            video.play();
+            prehravac.classList.add("playing");
+        });
+
+        video.addEventListener("playing", () => {
+            prehravac.classList.add("playing");
+        });
+
+        pauseButton.addEventListener("click", () => {
+            video.pause();
+            prehravac.classList.remove("playing");
+        });
+
+        video.addEventListener("pause", () => {
+            prehravac.classList.remove("playing");
+        });
+
+        video.addEventListener("timeupdate", () => {
+            const currentTime = video.currentTime;
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = Math.floor(currentTime % 60);
+            const formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            currentTimeDisplay.textContent = formattedTime;
+        });
+    }
+}

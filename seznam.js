@@ -103,4 +103,33 @@ const filmy = [
 			'Na zámek v podhůří Krkonoš přijíždí jeho nový majitel Štěpán se svojí snoubenkou, krásnou komtesou Blankou, a mladším bratrem Adamem. Cestou kočár nešťastně srazí kolemjdoucí dívku, Adam jí pomůže a ona se do něj zamiluje. Na zámku Adam objeví starou vlašskou knihu, která by měla obsahovat cestu k pokladům. Tajemné značky vlašské knihy však nedokáže vyluštit ani národopisec Jiráček, který v kraji sbírá pověsti a nevychází z údivu nad tím, že zdejší lidé stále věří v Krakonoše. Na zámku se objeví záhadný cizinec a nabídne Štěpánovi, že jej k pokladu za určitých podmínek dovede. Výprava do hor může začít. Naplní se Liduščina láska k Adamovi? Jakou záhadu skrývá starý obraz na zámku Hůrka a co strašlivého se v horách kdysi odehrálo? A kdo je vlastně Krakonoš a jaké je jeho největší tajemství? (csfd.cz, Česká televize)',
 		premiera: '2022-12-24',
 	},
+	
+	
 ]
+
+// 4. Na stránce se seznamem filmů vypište karty se všemi filmy z pole filmy.
+const seznamFilmu = document.getElementById("seznam-filmu")
+seznamFilmu.innerHTML = "";
+
+for (const film of filmy) { // cyklus projde každým prvkem pole filmy a pojmenuje ho jako film = proměnná film
+	seznamFilmu.innerHTML += `
+	  <article>
+		<div class="col">
+		  <div class="card">
+			<img
+			  src="${film.plakat.url}"
+			  width="${film.plakat.sirka}"
+			  height="${film.plakat.vyska}"
+			  class="card-img-top"
+			  alt="${film.nazev}"
+			/>
+			<div class="card-body">
+			  <h5 class="card-title">${film.nazev}</h5>
+			  <p class="card-text">${film.ochutnavka}</p>
+			  <a href="film.html#${film.id}" class="btn btn-primary">Přehrát</a>
+			</div>
+		  </div>
+		</div>
+	  </article>
+	`;
+  }
