@@ -105,6 +105,8 @@ const filmy = [
 	},
 ]
 
+//6. Premiéra
+
 const articleId = window.location.hash.slice(1);
 const article = filmy.find((ar) => ar.id === articleId);
 
@@ -214,6 +216,35 @@ detailFilmu.innerHTML += `
 </div>
 </div>
 `
+// 7. hvězdičky
+//pole hvězdiček query selektor or, přidat posluchač na událost 
+
+function highlightStars(numStars) { //funkce s jedním vstupním parametrem - přijímá číslo, které určuje, kolik hvězdiček má být zvýrazněno
+    const stars = document.querySelectorAll(".button-star"); //vybírá všechny prvky s třídou button-star a uládá je do proměnné stars
+    
+    stars.forEach((star, index) => { // pomocí forEach prochází všechny hvězdičky
+        if (index < numStars) {	// Pokud je index hvězdičky menší než numStars, znamená to, že tato hvězdička má být zvýrazněna (protože počítáme od nuly). Pokud je index větší nebo roven numStars, hvězdička má být obyčejná.
+            star.classList.remove("far");
+            star.classList.add("fas");
+        } else {
+            star.classList.remove("fas");
+            star.classList.add("far");
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function() { //událost, která se spoušt, když je vše načteno
+    const stars = document.querySelectorAll(".stars .button-star"); // vyhledává všechny prvky s třídou button-star, které jsou umístěny uvnitř prvků s třídou .stars
+
+    stars.forEach(star => { //prochází všechny prvky v poli stars (prvky s třídou button-star). Každý prvek je reprezentován parametrem star v anonymní funkci.
+        star.addEventListener("click", function() { //přidává posluchač události click k prvku star (prvku s třídou button-star). Když uživatel klikne na tento prvek, spustí se anonymní funkce, která je definovaná jako druhý argument metody addEventListener.
+            const numStars = parseInt(star.textContent); //získá textový obsah prvku star (tj. textový obsah tlačítka, které obsahuje hodnotu hodnocení) a převede ho na celé číslo pomocí funkce parseInt. Toto číslo představuje počet hvězdiček, které uživatel kliknul.
+            highlightStars(numStars); //volání funkce highlightStars
+        });
+    });
+});
+
+
 
 // 8. poznámka = formulář
 
@@ -234,45 +265,50 @@ formular.addEventListener("submit", (event) => {
     } else {
         poznamka.classList.remove("is-invalid") || termsCheckbox.classList.remove("is-invalid"); // Odebere třídu 'is-invalid', pokud jsou splněny podmínky
 
-        const formularObsah = document.querySelector("#note-content"); // Vybere místo pro zobrazení obsahu poznámky
-        formularObsah.innerHTML = `<p class="form-outline">${poznamka.value}</p>`; // Zobrazí obsah poznámky
+        const formularObsah = document.querySelector("#note-form"); // Vybere místo pro formulář
+        const poznamkaObsah = document.createElement("p"); // Vytvoří nový prvek <p> pro obsah poznámky
+        poznamkaObsah.classList.add("card-text"); // Přidá třídu pro formátování
+        poznamkaObsah.textContent = poznamka.value; // Nastaví text poznámky
+        formularObsah.parentNode.replaceChild(poznamkaObsah, formularObsah); // Nahradí formulář obsahem poznámky
     }
 });
 
 
-const prehravac = document.querySelector("#prehravac");
 
-if (prehravac) {
-    const video = prehravac.querySelector("video");
-    const playButton = prehravac.querySelector(".play");
-    const pauseButton = prehravac.querySelector(".pause");
-    const currentTimeDisplay = prehravac.querySelector(".current-time");
+// 9. prehrávač
+const prehravac = document.querySelector("#prehravac"); //vyhledá prvek s ID prehravac (proměnná prehravac, která odkazuje na prvek s ID prehravac)
 
-    if (video && playButton && pauseButton && currentTimeDisplay) {
-        playButton.addEventListener("click", () => {
-            video.play();
+if (prehravac) {				//kontroluje, zda proměnná prehravac obsahuje hodnotu
+    const video = prehravac.querySelector("video");		// hledá prvek video uvnitr prvku s ID prehravac
+    const playButton = prehravac.querySelector(".play");// hledá prvek s třídou play uvnitr prvku s ID prehravac - přehrání videa
+    const pauseButton = prehravac.querySelector(".pause");// hledá prvek s třídou pause uvnitr prvku s ID prehravac - zastavení a přehrání videa
+    const currentTimeDisplay = prehravac.querySelector(".current-time");// hledá prvek s třídou current-time uvnitr prvku s ID prehravac - aktuální čas videa
+
+    if (video && playButton && pauseButton && currentTimeDisplay) { //pokud vše platí, provede se podmínka
+        playButton.addEventListener("click", () => { //posluchač události kliknutí
+            video.play();	// metoda play - zapne přehrávání videa
+            prehravac.classList.add("playing"); //přidá třídu playing k prvku přehrávač
+        });
+
+        video.addEventListener("playing", () => { //přidá posluchač události playing na prvek video. Když video začne přehrávat,  přidá třídu "playing" k prvku prehravac.
             prehravac.classList.add("playing");
         });
 
-        video.addEventListener("playing", () => {
-            prehravac.classList.add("playing");
+        pauseButton.addEventListener("click", () => { //přidá posluchač události kliknutí na tlačítko přehrávání
+            video.pause();		//Když uživatel klikne na toto tlačítko, spustí funkce, která zastaví přehrávání videa pomocí metody .pause()  odstraní třídu "playing" z prvku prehravac.
+            prehravac.classList.remove("playing"); //odstraní třídu "playing" z prvku prehravac.
         });
 
-        pauseButton.addEventListener("click", () => {
-            video.pause();
+        video.addEventListener("pause", () => { //přidá posluchač události pause na video
             prehravac.classList.remove("playing");
         });
 
-        video.addEventListener("pause", () => {
-            prehravac.classList.remove("playing");
-        });
-
-        video.addEventListener("timeupdate", () => {
-            const currentTime = video.currentTime;
-            const minutes = Math.floor(currentTime / 60);
-            const seconds = Math.floor(currentTime % 60);
-            const formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-            currentTimeDisplay.textContent = formattedTime;
+        video.addEventListener("timeupdate", () => { //přidá posluchač události timeupdate na prvek videa. Událost timeupdate se spouští pravidelně, když se aktuální čas přehrávání videa mění.
+            const currentTime = video.currentTime;	// Získává aktuální čas přehrávání videa pomocí vlastnosti currentTime
+            const minutes = Math.floor(currentTime / 60); //Vypočítává celé minuty aktuálního času tím, že dělí aktuální čas v sekundách (získaný z předchozího kroku) 60 a zaokrouhluje dolů pomocí funkce Math.floor().
+            const seconds = Math.floor(currentTime % 60); //Vypočítává zbývající sekundy aktuálního času tím, že použije zbytek po dělení aktuálního času v sekundách 60 (získaný z předchozího kroku) a opět zaokrouhluje dolů
+            const formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`; //Sestavuje formátovaný čas ve formátu "minuty:sekundy". Pokud jsou sekundy menší než 10, přidá se k nim před ně nula.
+            currentTimeDisplay.textContent = formattedTime; //Aktualizuje textový obsah prvku currentTimeDisplay na formátovaný čas získaný v předchozím kroku.
         });
     }
 }
